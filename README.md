@@ -86,7 +86,3 @@ cd web && python manage.py test
 ```
 
 The planner tests check that the total equals the line items, hotel nights cover the stays, every connection meets the timing rule, the budget is respected when a feasible option exists, tax and contingency are applied once, the last requested city outranks a longer earlier stay, and an expired live quote is flagged and searched again. The flight normalizer drops a non-INR fare and a fare with no price. The web test rejects a narration that cites a price the plan does not contain.
-
-## Resume
-
-Portage — Django, Go, Kubernetes, Amazon Bedrock. Built a deterministic budget-constrained travel optimizer with AI-assisted explanations. Go prices the whole group, including room tax, meals, local transport, and a single contingency, and it rejects missed connections, overlapping nights, and a total that does not match its lines. When the request does not fit, it keeps the most requested cities and then the last city. A sample Delhi–Jaipur–Mumbai trip for two travelers resolves to ₹50,540 against an ₹80,000 cap. Amadeus test search is optional and is not commercial availability.
