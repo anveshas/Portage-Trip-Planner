@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Portage</title>
+  <style>
+    :root {
+      --paper: #f2efe8;
+      --sheet: #faf8f4;
+      --ink: #221e1a;
+      --muted: #6d665e;
+      --line: #ddd4c6;
+      --accent: #8f3d24;
+      --good: #1d5c3b;
+      --bad: #8a2b2b;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font: 16px/1.5 "Iowan Old Style", Palatino, Georgia, serif;
+    }
+    main { max-width: 44rem; margin: 0 auto; padding: 2.2rem 1.25rem 4rem; }
+    header { margin-bottom: 1.4rem; }
+    .mark {
+      margin: 0 0 0.35rem;
+      color: var(--accent);
+      font: 600 0.72rem/1 ui-sans-serif, system-ui, sans-serif;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+    h1 { margin: 0; font-size: 2.35rem; font-weight: 500; letter-spacing: -0.03em; }
+    h2 {
+      margin: 0 0 0.55rem;
+      font: 600 0.72rem/1 ui-sans-serif, system-ui, sans-serif;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .lede { margin: 0.55rem 0 0; max-width: 38rem; color: var(--muted); }
+    form, .sheet {
+      background: var(--sheet);
+      border: 1px solid var(--line);
+      margin-top: 1.1rem;
+    }
+    form { padding: 1rem 1rem 0.9rem; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem 1rem; }
+    label {
+      display: block;
+      margin: 0;
+      font: 600 0.72rem/1.2 ui-sans-serif, system-ui, sans-serif;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    input, select {
+      display: block;
+      width: 100%;
+      margin-top: 0.3rem;
+      padding: 0.45rem 0.5rem;
+      border: 1px solid var(--line);
+      border-radius: 2px;
+      background: #fff;
+      color: var(--ink);
+      font: 15px/1.3 ui-sans-serif, system-ui, sans-serif;
+    }
+    button {
+      margin-top: 0.9rem;
+      padding: 0.55rem 0.95rem;
+      border: 0;
+      background: var(--accent);
+      color: #fffaf6;
+      font: 600 0.85rem/1 ui-sans-serif, system-ui, sans-serif;
+      letter-spacing: 0.03em;
+      cursor: pointer;
+    }
+    button:hover { background: #732f1b; }
+    .error { color: var(--bad); }
+    .summary { padding: 1.1rem 1.15rem 0.4rem; border-bottom: 1px solid var(--line); }
+    .route { margin: 0; font-size: 1.35rem; letter-spacing: -0.02em; }
+    .money {
+      margin: 0.35rem 0 0.15rem;
+      font: 500 1.7rem/1.2 ui-sans-serif, system-ui, sans-serif;
+      font-variant-numeric: tabular-nums;
+    }
+    .ok { color: var(--good); }
+    .miss { color: var(--bad); }
+    .meta, small { color: var(--muted); font: 0.82rem/1.45 ui-sans-serif, system-ui, sans-serif; }
+    .notice, .section, .block { padding: 0.9rem 1.15rem; border-top: 1px solid var(--line); }
+    .notice { background: #f6efe4; }
+    p { margin: 0.35rem 0; }
+    ul, ol { margin: 0.3rem 0 0; padding-left: 1.15rem; }
+    li { margin: 0.25rem 0; }
+    table { width: 100%; border-collapse: collapse; }
+    td { padding: 0.55rem 0; vertical-align: top; border-top: 1px solid var(--line); }
+    tr:first-child td { border-top: 0; }
+    td:last-child {
+      text-align: right;
+      white-space: nowrap;
+      font: 500 0.95rem/1.4 ui-sans-serif, system-ui, sans-serif;
+      font-variant-numeric: tabular-nums;
+    }
+    .badge {
+      display: inline-block;
+      margin-left: 0.25rem;
+      padding: 0.05rem 0.35rem;
+      border: 1px solid var(--line);
+      font: 0.68rem/1.4 ui-sans-serif, system-ui, sans-serif;
+      letter-spacing: 0.02em;
+      vertical-align: 1px;
+    }
+    .live { background: #e7f2eb; }
+    .sample { background: #f3efe6; }
+    .estimated { background: #f7f1e4; }
+    .calculated { background: #e8eef4; }
+    .manual { background: #f8ebe6; }
+    .stop { margin: 0 0 0.85rem; padding-bottom: 0.85rem; border-bottom: 1px solid var(--line); }
+    .stop:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: 0; }
+    .stop h3 { margin: 0; font-size: 1.15rem; font-weight: 500; }
+    @media (max-width: 640px) {
+      .grid { grid-template-columns: 1fr; }
+      h1 { font-size: 2rem; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <p class="mark">India trip planner</p>
+      <h1>Portage</h1>
+      <p class="lede">A budget-constrained plan for a multi-city trip in India. Fares, hotel tax, meals, local travel, and an 8% contingency are added in code. Each price is marked live, sample, estimated, or calculated. Trains stay an IRCTC check until there is an authorized feed.</p>
+    </header>
+
+    <form method="post">
+      {% csrf_token %}
+      <div class="grid">
+        <label>From
+          <select name="origin">
+            {% for code, label in cities %}
+              <option value="{{ code }}" {% if code == form.origin %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </label>
+        <label>Leave <input type="date" name="start_date" value="{{ form.start_date }}" required></label>
+        <label>First city
+          <select name="stop1_city">
+            {% for code, label in cities %}
+              <option value="{{ code }}" {% if code == form.stop1_city %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </label>
+        <label>Nights there <input type="number" name="stop1_nights" min="1" max="4" value="{{ form.stop1_nights }}" required></label>
+        <label>Second city
+          <select name="stop2_city">
+            <option value="" {% if not form.stop2_city %}selected{% endif %}>No second city</option>
+            {% for code, label in cities %}
+              <option value="{{ code }}" {% if code == form.stop2_city %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </label>
+        <label>Nights there <input type="number" name="stop2_nights" min="1" max="4" value="{{ form.stop2_nights }}" required></label>
+        <label>Travelers <input type="number" name="travelers" min="1" max="4" value="{{ form.travelers }}" required></label>
+        <label>Budget in INR <input type="number" name="budget" min="1" value="{{ form.budget }}" required></label>
+      </div>
+      <button type="submit">Plan the trip</button>
+    </form>
+
+    {% if error %}<p class="error" id="error">{{ error }}</p>{% endif %}
+
+    {% if trip %}
+      {% with plan=trip.itinerary.plan %}
+      <article class="sheet">
+        <div class="summary">
+          {% if plan.route %}<p class="route">{{ plan.route }}</p>{% endif %}
+          <p class="money {% if plan.fits_budget %}ok{% else %}miss{% endif %}" id="total">
+            ₹{{ plan.total }} of ₹{{ plan.budget }}
+            {% if plan.booked %}
+              {% if plan.fits_budget %}fits the budget{% else %}does not fit the budget{% endif %}
+            {% else %}
+              was not booked
+            {% endif %}
+          </p>
+          <p class="meta {% if plan.valid %}ok{% else %}miss{% endif %}" id="checks">
+            {% if plan.valid %}The schedule checks passed.{% else %}The schedule checks failed.{% endif %}
+            {{ plan.report.live }} live, {{ plan.report.sample }} sample, {{ plan.report.estimated }} estimated, {{ plan.report.calculated }} calculated, {{ plan.report.manual }} manual.
+          </p>
+        </div>
+
+        {% if plan.fare_notice %}<p class="notice" id="fare-notice">{{ plan.fare_notice }}</p>{% endif %}
+        {% if plan.adjustment %}<p class="section" id="adjustment">{{ plan.adjustment }}</p>{% endif %}
+
+        <div class="section">
+          <h2>Itinerary</h2>
+          <p id="narrative">{{ trip.itinerary.narrative }}</p>
+        </div>
+
+        {% if plan.recovery %}
+          <div class="section" id="recovery">
+            <h2>How this route was recovered</h2>
+            <p>{{ plan.recovery.reason }}</p>
+            <p>{{ plan.recovery.date_note }}</p>
+            <ul>
+              {% for suggestion in plan.recovery.suggestions %}
+                <li>{{ suggestion.label }}{% if suggestion.total %} — ₹{{ suggestion.total }}{% endif %}. {{ suggestion.detail }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+
+        {% if plan.reductions %}
+          <div class="section">
+            <h2>Other budgets</h2>
+            <ul>
+              {% for cut in plan.reductions %}
+                <li>{{ cut.label }}: ₹{{ cut.total }} {% if cut.fits %}fits{% else %}does not fit{% endif %}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+
+        <div class="section">
+          <h2>Cost</h2>
+          <table>
+            {% for line in plan.lines %}
+              <tr>
+                <td>{{ line.label }} <span class="badge {{ line.source }}">{{ line.quote }}</span><br><small>{{ line.currency }} · {{ line.data_status }} · {{ line.provider }} · retrieved {{ line.retrieved_at }}{% if line.expires_at %} · expires {{ line.expires_at }}{% endif %}</small></td>
+                <td>₹{{ line.amount }}</td>
+              </tr>
+            {% endfor %}
+          </table>
+        </div>
+
+        <div class="section">
+          <h2>Rides</h2>
+          {% for leg in plan.legs %}
+            <div class="stop">
+              <h3>{{ leg.from_name }} to {{ leg.to_name }}</h3>
+              <p>{{ leg.carrier }} {{ leg.id }}, {{ leg.mode }}, ₹{{ leg.per_person }} per person, ₹{{ leg.total }} for the group. <span class="badge {{ leg.source }}">{{ leg.quote }}</span></p>
+              <p><small>{{ leg.currency }} · {{ leg.data_status }} · {{ leg.provider }} · retrieved {{ leg.retrieved_at }}{% if leg.expires_at %} · expires {{ leg.expires_at }}{% endif %}</small></p>
+              <p>{{ leg.why }}</p>
+            </div>
+          {% endfor %}
+        </div>
+
+        <div class="section">
+          <h2>Stay</h2>
+          {% for stay in plan.stays %}
+            <div class="stop">
+              <h3>{{ stay.name }}</h3>
+              <p>{{ stay.city_name }}, {{ stay.area }}. ₹{{ stay.nightly }} a night, {{ stay.nights }} night{{ stay.nights|pluralize }}, {{ stay.rooms }} room{{ stay.rooms|pluralize }}. Room ₹{{ stay.room_total }}, tax {{ stay.tax_rate }}% ₹{{ stay.tax }}. <span class="badge {{ stay.source }}">{{ stay.quote }}</span></p>
+              <p><small>{{ stay.currency }} · {{ stay.data_status }} · {{ stay.provider }} · retrieved {{ stay.retrieved_at }}{% if stay.expires_at %} · expires {{ stay.expires_at }}{% endif %}</small></p>
+              <p>{{ stay.check_in }} to {{ stay.check_out }}.</p>
+            </div>
+          {% endfor %}
+        </div>
+
+        <div class="section">
+          <h2>Not booked</h2>
+          <p>{{ plan.train_note }}</p>
+          <ul>
+            {% for alt in plan.alternatives %}
+              <li>{{ alt.label }}{% if alt.per_person %} — ₹{{ alt.per_person }}{% endif %}. {{ alt.reason }} <span class="badge {{ alt.source }}">{{ alt.source }}</span></li>
+            {% endfor %}
+          </ul>
+        </div>
+
+        {% if plan.issues %}
+          <div class="section">
+            <h2>Schedule problems</h2>
+            <ul>{% for issue in plan.issues %}<li>{{ issue.detail }}</li>{% endfor %}</ul>
+          </div>
+        {% endif %}
+
+        <div class="section">
+          <h2>How the plan was built</h2>
+          <ol id="trace">
+            {% for step in plan.steps %}
+              <li><strong>{{ step.agent }}</strong> — {{ step.action }}. {{ step.detail }}</li>
+            {% endfor %}
+          </ol>
+        </div>
+      </article>
+      {% endwith %}
+    {% endif %}
+  </main>
+</body>
+</html>

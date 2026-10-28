@@ -1,0 +1,44 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: portage
+      POSTGRES_PASSWORD: portage
+      POSTGRES_DB: portage
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U portage -d portage"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  gate:
+    build: ./gate
+    environment:
+      PORT: "8080"
+      AMADEUS_CLIENT_ID: ${AMADEUS_CLIENT_ID:-}
+      AMADEUS_CLIENT_SECRET: ${AMADEUS_CLIENT_SECRET:-}
+      AMADEUS_HOST: ${AMADEUS_HOST:-https://test.api.amadeus.com}
+
+  web:
+    build:
+      context: .
+      dockerfile: web/Dockerfile
+    environment:
+      DATABASE_URL: postgres://portage:portage@db:5432/portage
+      GATE_URL: http://gate:8080
+      DJANGO_DEBUG: "0"
+      DJANGO_SECRET_KEY: dev-compose-secret
+      DJANGO_ALLOWED_HOSTS: "*"
+      MODEL_PROVIDER: template
+      AWS_REGION: us-east-1
+      BEDROCK_MODEL_ID: amazon.nova-lite-v1:0
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+      gate:
+        condition: service_started
+    command: >
+      sh -c "python manage.py migrate &&
+             gunicorn config.wsgi:application --bind 0.0.0.0:8000"

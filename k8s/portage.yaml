@@ -1,0 +1,126 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: portage
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: portage-web
+  namespace: portage
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::ACCOUNT_ID:role/portage-web
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gate
+  namespace: portage
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gate
+  template:
+    metadata:
+      labels:
+        app: gate
+    spec:
+      containers:
+        - name: gate
+          image: ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/portage-gate:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: PORT
+              value: "8080"
+            - name: AMADEUS_HOST
+              value: https://test.api.amadeus.com
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+          resources:
+            requests:
+              cpu: 100m
+              memory: 64Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gate
+  namespace: portage
+spec:
+  selector:
+    app: gate
+  ports:
+    - port: 8080
+      targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+  namespace: portage
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      serviceAccountName: portage-web
+      containers:
+        - name: web
+          image: ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/portage-web:latest
+          ports:
+            - containerPort: 8000
+          env:
+            - name: GATE_URL
+              value: http://gate:8080
+            - name: MODEL_PROVIDER
+              value: bedrock
+            - name: BEDROCK_MODEL_ID
+              value: amazon.nova-lite-v1:0
+            - name: AWS_REGION
+              value: us-east-1
+            - name: DJANGO_DEBUG
+              value: "0"
+            - name: DJANGO_ALLOWED_HOSTS
+              value: "*"
+            - name: DJANGO_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: portage
+                  key: django-secret
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: portage
+                  key: database-url
+          command: ["sh", "-c", "python manage.py migrate && gunicorn config.wsgi:application --bind 0.0.0.0:8000"]
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: 8000
+          resources:
+            requests:
+              cpu: 200m
+              memory: 256Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web
+  namespace: portage
+spec:
+  type: NodePort
+  selector:
+    app: web
+  ports:
+    - port: 8000
+      targetPort: 8000
+      nodePort: 30080

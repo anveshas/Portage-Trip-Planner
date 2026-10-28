@@ -1,0 +1,32 @@
+{
+  "transports": [
+    {"id": "6E000", "mode": "flight", "origin": "DEL", "destination": "JAI", "carrier": "IndiGo", "depart": "07:00", "arrive": "08:10", "price": 0, "from_station": "DEL", "to_station": "JAI"},
+    {"id": "RB101", "mode": "bus", "origin": "DEL", "destination": "JAI", "carrier": "RedBus", "depart": "06:30", "arrive": "12:45", "price": 850, "from_station": "DEL-ISBT", "to_station": "JAI-SINDHI"},
+    {"id": "6E201", "mode": "flight", "origin": "DEL", "destination": "JAI", "carrier": "IndiGo", "depart": "08:00", "arrive": "09:10", "price": 4200, "from_station": "DEL", "to_station": "JAI"},
+    {"id": "6E209", "mode": "flight", "origin": "DEL", "destination": "JAI", "carrier": "IndiGo", "depart": "11:30", "arrive": "12:40", "price": 5100, "from_station": "DEL", "to_station": "JAI"},
+    {"id": "6E440", "mode": "flight", "origin": "JAI", "destination": "BOM", "carrier": "IndiGo", "depart": "16:30", "arrive": "18:20", "price": 6800, "from_station": "JAI", "to_station": "BOM"},
+    {"id": "6E441", "mode": "flight", "origin": "JAI", "destination": "BOM", "carrier": "IndiGo", "depart": "09:00", "arrive": "10:50", "price": 7400, "from_station": "JAI", "to_station": "BOM"},
+    {"id": "RB880", "mode": "bus", "origin": "JAI", "destination": "BOM", "carrier": "RedBus", "depart": "18:00", "arrive": "14:00", "price": 1600, "from_station": "JAI-SINDHI", "to_station": "BOM-DADR", "overnight": true},
+    {"id": "6E880", "mode": "flight", "origin": "BOM", "destination": "DEL", "carrier": "IndiGo", "depart": "20:30", "arrive": "22:40", "price": 5900, "from_station": "BOM", "to_station": "DEL"},
+    {"id": "6E220", "mode": "flight", "origin": "JAI", "destination": "DEL", "carrier": "IndiGo", "depart": "19:00", "arrive": "20:10", "price": 4000, "from_station": "JAI", "to_station": "DEL"},
+    {"id": "6E102", "mode": "flight", "origin": "DEL", "destination": "BOM", "carrier": "IndiGo", "depart": "07:00", "arrive": "09:10", "price": 7500, "from_station": "DEL", "to_station": "BOM"},
+    {"id": "6E330", "mode": "flight", "origin": "BOM", "destination": "GOI", "carrier": "IndiGo", "depart": "11:00", "arrive": "12:15", "price": 3900, "from_station": "BOM", "to_station": "GOI"},
+    {"id": "6E331", "mode": "flight", "origin": "GOI", "destination": "DEL", "carrier": "IndiGo", "depart": "18:00", "arrive": "20:30", "price": 6100, "from_station": "GOI", "to_station": "DEL"}
+  ],
+  "trains": [
+    {"origin": "DEL", "destination": "JAI", "per_person": 450},
+    {"origin": "JAI", "destination": "DEL", "per_person": 450},
+    {"origin": "JAI", "destination": "BOM", "per_person": 1250},
+    {"origin": "BOM", "destination": "DEL", "per_person": 1400},
+    {"origin": "DEL", "destination": "BOM", "per_person": 1400},
+    {"origin": "BOM", "destination": "GOI", "per_person": 800},
+    {"origin": "GOI", "destination": "DEL", "per_person": 1600}
+  ],
+  "hotels": [
+    {"id": "jai-station", "city": "JAI", "name": "Station Inn", "nightly": 1800, "area": "Sindhi Camp"},
+    {"id": "jai-pink", "city": "JAI", "name": "Pink City House", "nightly": 2800, "area": "Old City"},
+    {"id": "bom-bandra", "city": "BOM", "name": "Bandra Rooms", "nightly": 3600, "area": "Bandra"},
+    {"id": "bom-colaba", "city": "BOM", "name": "Colaba House", "nightly": 5200, "area": "Colaba"},
+    {"id": "goi-panaji", "city": "GOI", "name": "Panaji Stay", "nightly": 3000, "area": "Panaji"}
+  ]
+}

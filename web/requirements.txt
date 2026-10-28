@@ -1,0 +1,4 @@
+Django>=5.1,<6
+boto3>=1.35
+gunicorn>=23
+psycopg[binary]>=3.2
