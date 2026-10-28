@@ -25,7 +25,7 @@ The project uses **Go** for itinerary planning and cost calculations, **Django**
 ## Technology Stack
 
 - **Backend:** Python, Django, Go
-- **AI Integration:** Amazon Bedrock (optional)
+- **AI Integration:** Amazon Bedrock
 - **Database:** SQLite for local development, PostgreSQL with Docker Compose
 - **Infrastructure:** Docker, Docker Compose, Kubernetes
 - **Testing:** Go tests, Django tests
